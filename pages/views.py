@@ -1,9 +1,29 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from listings.models import Listing
+from listings.choices import prices_choices , bedroom_choices , state_choices
+from realtors.models import Realtor
 
 # Create your views here.
 def index(request):
-    return render(request,'pages/index.html')
+    listings = Listing.objects.order_by('-list_date').filter(is_published = True)[:3]
+
+    context = {
+        'listings': listings,
+        'state_choices': state_choices,
+        'prices_choices': prices_choices,
+        'bedroom_choices': bedroom_choices,
+    }
+    return render(request,'pages/index.html', context)
 
 def about(request):
-    return render(request,'pages/about.html')
+    #get realtor
+    realtors = Realtor.objects.order_by('-hire_date')
+
+    mvp_realtor = Realtor.objects.all().filter(is_mvp = True)
+
+    context = {
+        'realtors' : realtors,
+        'mvp_realtor' : mvp_realtor,
+    }
+    return render(request,'pages/about.html', context)
